@@ -1,0 +1,44 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment
+.env
+.venv/
+venv/
+ENV/
+env.bak/
+env/
+
+# Streamlit cache
+.streamlit/
+
+# VSCode / IDE
+.vscode/
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Pytest
+.cache/
+
+# FAISS index (optional)
+*.faiss
+*.pkl
+vector_store/index/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Playwright stuff
+playwright/.cache/
+
+# CrewAI logs/output
+crew_output/
+crewai_logs/
