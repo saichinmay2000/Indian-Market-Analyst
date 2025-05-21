@@ -4,6 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import streamlit as st
 from rag_pipeline.rag_agent import RAGAgent
+from crew.crew_setup import run_crew
 from dotenv import load_dotenv
 load_dotenv()
 
