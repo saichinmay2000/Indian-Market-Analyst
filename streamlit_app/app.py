@@ -4,11 +4,20 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import streamlit as st
 from rag_pipeline.rag_agent import RAGAgent
+from apscheduler.schedulers.blocking import BlockingScheduler
+import subprocess
 from crew.crew_setup import run_crew
 from dotenv import load_dotenv
 load_dotenv()
 
+scheduler = BlockingScheduler()
 
+@scheduler.scheduled_job('cron', minute='*')
+def run_main_script():
+    subprocess.call(['python', 'main.py'])
+    print("Main script executed.")
+
+scheduler.start()
 
 # Initialize
 st.set_page_config(page_title="🧠 Indian Financial Market Analyst", layout="wide")
