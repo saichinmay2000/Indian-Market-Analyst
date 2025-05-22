@@ -4,34 +4,7 @@ from datetime import datetime
 import json
 import os
 
-# def scrape_moneycontrol():
-#     url = "https://www.moneycontrol.com/news/business/markets/"
-#     response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
-#     soup = BeautifulSoup(response.text, 'html.parser')
-
-#     articles = []
-
-#     for item in soup.select('li.clearfix'):
-#         title_tag = item.find('h2').find('a')
-#         # title1 = title_tag.get('title', '')
-#         summary_tag = item.find('p')
-#         # print("Title:" , title1)
-#         # print("Summary:" , summary_tag)
-#         if title_tag and summary_tag:
-#             title = title_tag.get('title', '')
-#             summary = summary_tag.get_text(strip=True)
-#             link = title_tag['href']
-#             # print("Link:" , link)
-#             articles.append({
-#                 'source': 'Moneycontrol',
-#                 'title': title,
-#                 'summary': summary,
-#                 'url': link,
-#                 'timestamp': datetime.now().isoformat()
-#             })
-
-#     return articles
-
+# @Scraper Money Control
 def scrape_moneycontrol(max_pages=30):
     base_url = "https://www.moneycontrol.com/news/business/markets"
     articles = []
@@ -73,43 +46,91 @@ def scrape_moneycontrol(max_pages=30):
     print(f"✅ Total articles scraped: {len(articles)}")
     return articles
 
+# @Scraper Live Mint
+# def scrape_livemint():
+#     base_url = "https://www.livemint.com/market/stock-market-news/"
+#     response = requests.get(base_url, headers={'User-Agent': 'Mozilla/5.0'})
+#     soup = BeautifulSoup(response.text, 'html.parser')
+#     # print(soup.select('div.listView div.listtostory.clearfix div.headlineSec a'))
+#     articles = []
+
+#     for item in soup.select('div.listView div.listtostory.clearfix div.headlineSec a'):
+#         title = item.get_text(strip=True)
+#         link_tag = item.get('href')
+        
+#         if link_tag and link_tag.startswith('/'):
+#             full_link = "https://www.livemint.com" + link_tag
+        
+#         if(title == '' or link_tag == ''):
+#             continue
+#         else:
+#             articles.append({
+#             'source': 'LiveMint',
+#             'title': title,
+#             'summary': '',
+#             'url': full_link,
+#             'timestamp': datetime.now().isoformat()
+#         })
+
+#     return articles
 
 def scrape_livemint():
-    url = "https://www.livemint.com/market"
-    response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
-    soup = BeautifulSoup(response.text, 'html.parser')
-
+    base_url = "https://www.livemint.com/market/stock-market-news"
     articles = []
+    page = 1
 
-    for item in soup.select('section.listingPage > ul > li'):
-        link_tag = item.find('a', href=True)
-        if link_tag:
-            title = link_tag.get_text(strip=True)
-            link = "https://www.livemint.com" + link_tag['href']
+    while True:
+        if page == 1:
+            url = base_url
+        else:
+            url = f"{base_url}/page-{page}"
+
+        print(f"Scraping page {page}...")
+        response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Check for "No Content" page
+        if soup.select_one('section.mainSec div.errorHolder'):
+            print("Reached a page with no content. Stopping.")
+            break
+
+        for item in soup.select('div.listView div.listtostory.clearfix div.headlineSec a'):
+            title = item.get_text(strip=True)
+            link_tag = item.get('href')
+
+            if title == '' or link_tag == '':
+                continue
+
+            if link_tag.startswith('/'):
+                full_link = "https://www.livemint.com" + link_tag
+            else:
+                full_link = link_tag
 
             articles.append({
                 'source': 'LiveMint',
                 'title': title,
                 'summary': '',
-                'url': link,
+                'url': full_link,
                 'timestamp': datetime.now().isoformat()
             })
+
+        page += 1
 
     return articles
 
 
 def scrape_all_news():
     mc = scrape_moneycontrol()
-    # lm = scrape_livemint()
-    return mc
+    lm = scrape_livemint()
+    return lm + mc
 
 
 if __name__ == "__main__":
     news = scrape_all_news()
-    with open("scraped_news.json", "w") as f:
-        json.dump(news, f, indent=2)
-    # for article in news[:5]:  # Just show top 5 for now
-    #     print(f"{article['source']} | {article['title']} | {article['timestamp']}")
-    #     print(article['summary'])
-    #     print(article['url'])
-    #     print("---")
+    # with open("scraped_news.json", "w") as f:
+    #     json.dump(news, f, indent=2)
+    for article in news[:5]:  # Just show top 5 for now
+        print(f"{article['source']} | {article['title']} | {article['timestamp']}")
+        print(article['summary'])
+        print(article['url'])
+        print("---")

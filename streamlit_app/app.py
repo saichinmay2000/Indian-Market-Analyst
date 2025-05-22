@@ -10,14 +10,14 @@ from crew.crew_setup import run_crew
 from dotenv import load_dotenv
 load_dotenv()
 
-scheduler = BlockingScheduler()
+# scheduler = BlockingScheduler()
 
-@scheduler.scheduled_job('cron', minute='*')
-def run_main_script():
-    subprocess.call(['python', 'main.py'])
-    print("Main script executed.")
+# @scheduler.scheduled_job('cron', minute='*')
+# def run_main_script():
+#     subprocess.call(['python', 'main.py'])
+#     print("Main script executed.")
 
-scheduler.start()
+# scheduler.start()
 
 # Initialize
 st.set_page_config(page_title="🧠 Indian Financial Market Analyst", layout="wide")
@@ -40,4 +40,4 @@ if query:
     st.markdown("---")
     st.markdown("### 📚 Sources")
     for src in sources:
-        st.markdown(f"- [{src.metadata['title']}]({src.metadata['url']})")
+        st.markdown(f"- [{src.metadata['title']}]({src.metadata['url']}) ({'Moneycontrol' if 'moneycontrol' in src.metadata['url'] else 'Live Mint'})")
